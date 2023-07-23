@@ -8,15 +8,15 @@ CONFIG += c++17
 QMAKE_CFLAGS += -std=gnu11 -O2
 #QMAKE_CFLAGS += -std=gnu11 -g3 -Og -gdwarf-2 -finline-functions
 
-CONFIG += warn_off # Disable warnings for library
+#CONFIG += warn_off # Disable warnings for library
 
-DEBUG_ASAN: CONFIG += sanitizer sanitize_address
+#DEBUG_ASAN: CONFIG += sanitizer sanitize_address
 
 # Enable liveprog logging redirection
-DEFINES += CUSTOM_CMD
+#DEFINES += CUSTOM_CMD
 
 # Redirect printf & android logging to our custom handlers
-DEFINES += printf=redirected_printf ANDROID_LOG_INFO=0 DEBUG
+#DEFINES += printf=redirected_printf ANDROID_LOG_INFO=0 DEBUG
 
 BASEPATH = $$PWD/subtree/Main/libjamesdsp/jni/jamesdsp/jdsp/
 
