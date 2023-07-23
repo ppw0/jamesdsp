@@ -65,6 +65,7 @@ extern "C" {
   // VMs that have a NULL GRAM pointer from multiple threads.
   // if you give each VM it's own unique GRAM and only run each VM in one thread, then you can leave it blank.
   // or if you're daring....
+void shift(float *arr, int32_t k, int32_t n);
 void NSEEL_HOSTSTUB_EnterMutex();
 void NSEEL_HOSTSTUB_LeaveMutex();
 typedef void *NSEEL_VMCTX;
