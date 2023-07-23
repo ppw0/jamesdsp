@@ -120,7 +120,7 @@ void *convBench(void *arg)
 #else
 	usleep(sleepMs * 1000ULL);
 #endif
-#ifdef DEBUG
+#if defined __ANDROID__ && defined DEBUG
 	__android_log_print(ANDROID_LOG_INFO, TAG, "Benchmark start");
 #endif
 	const int sflen_start = 64;
@@ -144,7 +144,7 @@ void *convBench(void *arg)
 	}
 	memcpy(convbench_c1, _c1, sizeof(_c1));
 	memcpy(convbench_c0, _c0, sizeof(_c0));
-#ifdef DEBUG
+#if defined __ANDROID__ && defined DEBUG
 	__android_log_print(ANDROID_LOG_INFO, TAG, "Benchmark done");
 #endif
 	benchmarkCompletionFlag = 1;
@@ -249,7 +249,7 @@ void JamesDSPReallocateBlock(JamesDSPLib *jdsp, size_t n)
 }
 void JamesDSPRefreshConvolutions(JamesDSPLib *jdsp, char refreshAll)
 {
-#ifdef DEBUG
+#if defined __ANDROID__ && defined DEBUG
 	__android_log_print(ANDROID_LOG_INFO, TAG, "Buffer size changed, update convolution object to maximize performance");
 #endif
 	if (jdsp->impulseResponseStorage.impulseResponse)
@@ -394,7 +394,7 @@ void JamesDSPProcessCheckBenchmarkReady(JamesDSPLib *jdsp, size_t n)
 	}
 	if (benchmarkCompletionFlag == 1)
 	{
-#ifdef DEBUG
+#if defined __ANDROID__ && defined DEBUG
 		__android_log_print(ANDROID_LOG_INFO, TAG, "Benchmark flag == 1, refreshing convolutions");
 #endif
 		JamesDSPRefreshConvolutions(jdsp, 0);
@@ -1107,7 +1107,7 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	}
 	JamesDSPRefreshBlob(jdsp, (double)jdsp->fs);
 	jdsp->rndstate[1] = (uint64_t)(randXorshift(jdsp->rndstate) * 2.0);
-#ifdef DEBUG
+#if defined __ANDROID__ && defined DEBUG
 	__android_log_print(ANDROID_LOG_INFO, TAG, "Printing benchmark data start");
 	for (int s = 0; s < MAX_BENCHMARK; s++)
 		__android_log_print(ANDROID_LOG_INFO, TAG, "%1.7lf,%1.7lf", convbench_c0[s], convbench_c1[s]);
