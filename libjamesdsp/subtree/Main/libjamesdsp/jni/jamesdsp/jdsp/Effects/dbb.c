@@ -124,7 +124,7 @@ static void fht16(float A[16])
 }
 void integerDelayLineDoubleP_clear(integerDelayLine *delayLine)
 {
-	for (unsigned int i = 0; i < delayLine->allocateLen; i++)
+	for (int i = 0; i < delayLine->allocateLen; i++)
 		delayLine->inputs[i] = 0;
 }
 void integerDelayLineInit(integerDelayLine *delayLine, unsigned int allocateLen)
@@ -136,7 +136,7 @@ void integerDelayLineInit(integerDelayLine *delayLine, unsigned int allocateLen)
 	delayLine->inPoint = 0;
 	delayLine->outPoint = delayLine->allocateLen >> 1;
 }
-void integerDelayLine_setDelay(integerDelayLine *delayLine, unsigned int lag)
+void integerDelayLine_setDelay(integerDelayLine *delayLine, int lag)
 {
 	if (lag > delayLine->allocateLen - 1)
 		delayLine->outPoint = delayLine->inPoint + 1;
@@ -181,7 +181,7 @@ void InitStateVariable2ndOrder(StateVariable2ndOrder *svf)
 	svf->precomputeCoeff4 = 0.0f;
 	svf->z1_A = svf->z2_A = 0.0f;
 }
-const double resonanceToQ(const double resonance)
+double resonanceToQ(const double resonance)
 {
 	return 1.0 / (2.0 * (1.0 - resonance));
 }
@@ -362,7 +362,7 @@ static void DBBProcess(DBB *dbb, float *x1, float *x2, float *y1, float *y2, siz
 			float peak1 = dbb->smoothFFTBuffer[0] = fabsf(dbb->fftBuf[0]);
 			float peak2 = fabsf(dbb->fftBuf[0]);
 			float currentMaxFreq = dbb->freq[0];
-			float currentMinFreq = dbb->freq[0];
+			//float currentMinFreq = dbb->freq[0];
 			float maxdB, mindB;
 			mindB = maxdB = 20.0f * log10f(peak1 + FLT_EPSILON);
 #ifdef DEBUG_DBB
@@ -401,7 +401,7 @@ static void DBBProcess(DBB *dbb, float *x1, float *x2, float *y1, float *y2, siz
 				if (dbb->smoothFFTBuffer[i] < peak2)
 				{
 					peak2 = dbb->smoothFFTBuffer[i];
-					currentMinFreq = dbb->freq[i];
+					//currentMinFreq = dbb->freq[i];
 					mindB = 20.0f * log10f(dbb->smoothFFTBuffer[i] + FLT_EPSILON);
 				}
 			}
