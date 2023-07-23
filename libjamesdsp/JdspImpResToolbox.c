@@ -162,11 +162,8 @@ void checkStartEnd(float **signal, int channels, int nsamples, float normalizedD
     range[1] = lastSmpsPrevious + 1;
 }
 #include "Effects/eel2/numericSys/libsamplerate/samplerate.h"
-//#define DRMP3_IMPLEMENTATION
 #include "Effects/eel2/dr_mp3.h"
-//#define DR_FLAC_IMPLEMENTATION
 #include "Effects/eel2/dr_flac.h"
-//#define DR_WAV_IMPLEMENTATION
 #include "Effects/eel2/dr_wav.h"
 const char *get_filename_ext(const char *filename)
 {
@@ -307,13 +304,6 @@ float* loadAudioFile(const char *filename, double targetFs, unsigned int *channe
         pSampleData = drwav_open_file_and_read_pcm_frames_f32(filename, channels, &fs, totalPCMFrameCount, 0);
     if (!strncmp(ext, "flac", 5))
         pSampleData = drflac_open_file_and_read_pcm_frames_f32(filename, channels, &fs, totalPCMFrameCount, 0);
-    /*if (!strncmp(ext, "mp3", 5))
-    {
-        drmp3_config mp3Conf;
-        pSampleData = drmp3_open_file_and_read_pcm_frames_f32(filename, &mp3Conf, totalPCMFrameCount, 0);
-        *channels = mp3Conf.channels;
-        fs = mp3Conf.sampleRate;
-    }*/
     if (pSampleData == NULL)
     {
         printf("Error opening and reading WAV file");
@@ -464,50 +454,6 @@ float* ReadImpulseResponseToFloat
 
     return pFrameBuffer;
 }
-
-/*JNIEXPORT jstring JNICALL Java_james_dsp_activity_JdspImpResToolbox_OfflineAudioResample
-(JNIEnv *env, jobject obj, jstring path, jstring filename, jint targetSampleRate)
-{
-    const char *jnipath = (*env)->GetStringUTFChars(env, path, 0);
-    if (strlen(jnipath) <= 0) return 0;
-    const char *mIRFileName = (*env)->GetStringUTFChars(env, filename, 0);
-    if (strlen(mIRFileName) <= 0) return 0;
-    size_t needed = snprintf(NULL, 0, "%s%s", jnipath, mIRFileName) + 1;
-    char *filenameIR = malloc(needed);
-    snprintf(filenameIR, needed, "%s%s", jnipath, mIRFileName);
-    unsigned int channels;
-    drwav_uint64 frameCount;
-    float *pFrameBuffer = loadAudioFile(filenameIR, targetSampleRate, &channels, &frameCount, 0);
-    free(filenameIR);
-    if (!pFrameBuffer)
-    {
-        needed = snprintf(NULL, 0, "Invalid") + 1;
-        filenameIR = malloc(needed);
-        snprintf(filenameIR, needed, "Invalid");
-    }
-    else
-    {
-        needed = snprintf(NULL, 0, "%s%d_%s", jnipath, targetSampleRate, mIRFileName) + 1;
-        filenameIR = malloc(needed);
-        snprintf(filenameIR, needed, "%s%d_%s", jnipath, targetSampleRate, mIRFileName);
-        drwav pWav;
-        drwav_data_format format;
-        format.container = drwav_container_riff;
-        format.format = DR_WAVE_FORMAT_IEEE_FLOAT;
-        format.channels = channels;
-        format.sampleRate = targetSampleRate;
-        format.bitsPerSample = 32;
-        unsigned int fail = drwav_init_file_write(&pWav, filenameIR, &format, 0);
-        drwav_uint64 framesWritten = drwav_write_pcm_frames(&pWav, frameCount, pFrameBuffer);
-        drwav_uninit(&pWav);
-        free(pFrameBuffer);
-    }
-    (*env)->ReleaseStringUTFChars(env, path, jnipath);
-    (*env)->ReleaseStringUTFChars(env, filename, mIRFileName);
-    jstring finalName = (*env)->NewStringUTF(env, filenameIR);
-    free(filenameIR);
-    return finalName;
-}*/
 
 int ComputeEqResponse(const double* jfreq, double* jgain, int interpolationMode, int queryPts, double* dispFreq, float* response)
 {
