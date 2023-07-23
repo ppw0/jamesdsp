@@ -8,6 +8,7 @@
 #include <chrono>
 #include <charconv>
 #include <functional>
+#include <sstream>
 
 #if __cplusplus > 201703L && __has_builtin(__builtin_source_location)
 #include <source_location>
@@ -75,21 +76,23 @@ auto str_contains(const std::string& haystack, const std::string& needle) -> boo
 
 template <typename T>
 auto str_to_num(const std::string& str, T& num) -> bool {
-  // This is a more robust implementation of `std::from_chars`
-  // so that we don't have to do every time with `std::from_chars_result` structure.
-  // We don't care of error types, so a simple bool is returned on success/fail.
-  // A left trim is performed on strings so that the conversion could success
-  // even if there are leading whitespaces and/or the plus sign.
+    // This is a more robust implementation of `std::from_chars`, so that we don't have to do it every time with `std::from_chars_result`.
+    // We don't care about error types, so a simple boolean is returned on success or failure.
+    // A left trim is performed on strings so that the conversion can succeed even with leading whitespace and/or the plus sign.
 
-  auto first_char = str.find_first_not_of(" +\n\r\t");
+    std::istringstream iss(str);
+    iss >> std::ws; // Skip leading whitespace
 
-  if (first_char == std::string::npos) {
-    return false;
-  }
+    if (iss.peek() == '+') {
+        iss.ignore(); // Skip the plus sign if present
+    }
 
-  const auto result = std::from_chars(str.data() + first_char, str.data() + str.size(), num);
+    // Attempt to extract the numeric value from the stream
+    if (!(iss >> num)) {
+        return false; // Conversion failed
+    }
 
-  return (result.ec == std::errc());
+    return true; // Conversion succeeded
 }
 
 template <typename T>
