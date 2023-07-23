@@ -1,4 +1,7 @@
+#define _GNU_SOURCE
 #include "PrintfStdOutExtension.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 
 static stdOutHandler _printfStdOutHandlerPtr = 0;
