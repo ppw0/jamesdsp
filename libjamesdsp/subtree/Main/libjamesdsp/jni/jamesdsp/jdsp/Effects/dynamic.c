@@ -76,15 +76,15 @@ void LLbitReversalTblM(unsigned *dst, unsigned int fftLen)
 void LLsinHalfTblFloatM(float *dst, unsigned int fftLen)
 {
 	const double twopi_over_n = 6.283185307179586476925286766559 / fftLen;
-	for (int i = 0; i < fftLen >> 1; ++i)
+	for (unsigned int i = 0; i < fftLen >> 1; ++i)
 		dst[i] = (float)sin(twopi_over_n * i);
 }
 #include "../generalDSP/spectralInterpolatorFloat.h"
-static size_t choose(float *a, float *b, size_t src1, size_t src2)
+static size_t choose(const float *a, const float *b, size_t src1, size_t src2)
 {
 	return (*b >= *a) ? src2 : src1;
 }
-static size_t fast_upper_bound4(float *vec, size_t n, float *value)
+static size_t fast_upper_bound4(const float *vec, size_t n, const float *value)
 {
 	size_t size = n;
 	size_t low = 0;
@@ -121,7 +121,7 @@ static size_t fast_upper_bound4(float *vec, size_t n, float *value)
 	}
 	return low;
 }
-static inline float lerp1DNoExtrapo(float val, float *x, float *y, int n)
+static inline float lerp1DNoExtrapo(float val, const float *x, const float *y, int n)
 {
 	if (val <= x[0])
 		return y[0];
@@ -291,7 +291,7 @@ int FFTCompanderProcessSamples(FFTCompander *cm, const float *inLeft, const floa
 			cm->timeDomainOut[1][0] = rR;
 			unsigned int bitRevFwd, bitRevSym;
 			//idxFrame++;
-			unsigned int specLen = *((unsigned int *)(cm->octaveSmooth));
+			//unsigned int specLen = *((unsigned int *)(cm->octaveSmooth));
 			float reciprocal = *((float *)(cm->octaveSmooth + sizeof(unsigned int)));
 			unsigned int lpLen = *((unsigned int *)(cm->octaveSmooth + sizeof(unsigned int) + sizeof(float)));
 			float *lv1 = (float *)(cm->octaveSmooth + sizeof(unsigned int) + sizeof(float) + sizeof(unsigned int) + (lpLen << 1) * sizeof(unsigned int) + lpLen * sizeof(float));
@@ -465,7 +465,8 @@ int FFTCompanderProcessSamples(FFTCompander *cm, const float *inLeft, const floa
 void FFTCompanderSetavgBW(FFTCompander *cm, double avgBW)
 {
 	unsigned int fcLen;
-	size_t virtualStructSize = EstimateMemorySpectralInterpolator(&fcLen, cm->procUpTo, avgBW, &cm->smallGridSize);
+	//size_t virtualStructSize = EstimateMemorySpectralInterpolator(&fcLen, cm->procUpTo, avgBW, &cm->smallGridSize);
+	EstimateMemorySpectralInterpolator(&fcLen, cm->procUpTo, avgBW, &cm->smallGridSize);
 	if (fcLen)
 	{
 		cm->noGridDownsampling = 0;
@@ -585,9 +586,9 @@ void FFTCompanderInit(FFTCompander *cm, float fs)
 	getAsymmetricWindow(cm->analysisWnd, cm->synthesisWnd, cm->fftLen, cm->ovpLen, cm->smpShift, wndBeta);
 	for (i = 0; i < cm->fftLen; i++)
 		cm->analysisWnd[i] *= (1.0f / cm->fftLen) * 0.5f;
-	float sum = 0.0f;
-	for (i = 0; i < cm->fftLen; i++)
-		sum += cm->analysisWnd[i];
+	//float sum = 0.0f;
+	//for (i = 0; i < cm->fftLen; i++)
+	//	sum += cm->analysisWnd[i];
 	FFTCompanderSetavgBW(cm, 1.2);
 	cm->spectralRate = fs / (float)cm->fftLen * (float)ANALYSIS_OVERLAP_DRS;
 	for (i = 0; i < HALFWNDLEN_DRS; i++)
@@ -694,11 +695,11 @@ void CompressorSetGain(JamesDSPLib *jdsp, double *freq, double *gains, char cpy)
 	cm->freq2[NUMPTS_DRS + 1] = 24000.0;
 	cm->gains2[NUMPTS_DRS + 1] = cm->gains2[NUMPTS_DRS];
 	makima(&cm->pch, cm->freq2, cm->gains2, NUMPTS_DRS + 2, 1, 1);
-	unsigned int specLen = *((unsigned int *)(cm->octaveSmooth));
-	float reciprocal = *((float *)(cm->octaveSmooth + sizeof(unsigned int)));
-	unsigned int lpLen = *((unsigned int *)(cm->octaveSmooth + sizeof(unsigned int) + sizeof(float)));
-	float *lv1 = (float *)(cm->octaveSmooth + sizeof(unsigned int) + sizeof(float) + sizeof(unsigned int) + (lpLen << 1) * sizeof(unsigned int) + lpLen * sizeof(float));
-	float *lv2 = (float *)(cm->octaveSmooth + sizeof(unsigned int) + sizeof(float) + sizeof(unsigned int) + (lpLen << 1) * sizeof(unsigned int) + lpLen * sizeof(float) + (lpLen + 3) * sizeof(float));
+	//unsigned int specLen = *((unsigned int *)(cm->octaveSmooth));
+	//float reciprocal = *((float *)(cm->octaveSmooth + sizeof(unsigned int)));
+	//unsigned int lpLen = *((unsigned int *)(cm->octaveSmooth + sizeof(unsigned int) + sizeof(float)));
+	//float *lv1 = (float *)(cm->octaveSmooth + sizeof(unsigned int) + sizeof(float) + sizeof(unsigned int) + (lpLen << 1) * sizeof(unsigned int) + lpLen * sizeof(float));
+	//float *lv2 = (float *)(cm->octaveSmooth + sizeof(unsigned int) + sizeof(float) + sizeof(unsigned int) + (lpLen << 1) * sizeof(unsigned int) + lpLen * sizeof(float) + (lpLen + 3) * sizeof(float));
 	if (cm->tfresolution < 2)
 	{
 		for (int i = 0; i < HALFWNDLEN_DRS; i++)
@@ -710,7 +711,7 @@ void CompressorSetGain(JamesDSPLib *jdsp, double *freq, double *gains, char cpy)
 		cm->headRoomdB = 10.0f;
 		if (!cm->noGridDownsampling)
 		{
-			for (int i = 0; i < cm->smallGridSize; i++)
+			for (unsigned int i = 0; i < cm->smallGridSize; i++)
 			{
 				if (cm->DREmult[i] < -1.2)
 					cm->DREmult[i] = -1.2;
@@ -722,7 +723,7 @@ void CompressorSetGain(JamesDSPLib *jdsp, double *freq, double *gains, char cpy)
 		}
 		else
 		{
-			for (int i = 0; i < cm->procUpTo; i++)
+			for (unsigned int i = 0; i < cm->procUpTo; i++)
 			{
 				if (cm->DREmult[i] < -1.2)
 					cm->DREmult[i] = -1.2;

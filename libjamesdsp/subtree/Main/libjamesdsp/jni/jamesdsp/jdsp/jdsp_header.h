@@ -57,7 +57,7 @@ typedef struct
 	float analysisWnd[FFTSIZE_DRS];
 	float synthesisWnd[FFTSIZE_DRS];
 	// Shared variable between all FFT length and modes and channel config
-	int  mOutputReadSampleOffset;
+	unsigned int mOutputReadSampleOffset;
 	int  mOutputBufferCount; // How many buffers are actually in use
 	unsigned int mInputSamplesNeeded;
 	float 	*mOutputBuffer[MAX_OUTPUT_BUFFERS_DRS];
